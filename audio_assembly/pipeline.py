@@ -116,12 +116,29 @@ def process_audio(
     if stub_transcription is not None:
         transcription = transcribe_audio_stub(audio_analysis, analysis_sr, stub_transcription)
     else:
-        transcription = transcribe_audio(
-            audio_analysis,
-            analysis_sr,
-            model_size=config.whisper_model,
-            language="pl",
-        )
+        try:
+            transcription = transcribe_audio(
+                audio_analysis,
+                analysis_sr,
+                model_size=config.whisper_model,
+                language="pl",
+            )
+        except ImportError:
+            logger.warning(
+                "faster-whisper not installed. Using VAD-based stub transcription. "
+                "Install with: pip install faster-whisper"
+            )
+            # Build stub transcription from VAD segments
+            stub_words = []
+            for seg in voice_segments:
+                if seg.is_speech:
+                    stub_words.append({
+                        "word": "[mowa]",
+                        "start": seg.start,
+                        "end": seg.end,
+                        "confidence": 0.5,
+                    })
+            transcription = transcribe_audio_stub(audio_analysis, analysis_sr, stub_words)
 
     logger.info("Transcribed %d words", len(transcription.words))
 

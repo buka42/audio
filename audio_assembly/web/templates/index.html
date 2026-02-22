@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Assembly — Montaż audio PL</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <!-- ════ HEADER ════ -->
+        <header class="header">
+            <div class="header__logo">
+                <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+                <h1>Audio Assembly</h1>
+            </div>
+            <p class="header__subtitle">Automatyczny montaż audio — wywiady i podcasty PL</p>
+        </header>
+
+        <!-- ════ MAIN CONTENT ════ -->
+        <main class="main">
+
+            <!-- ── STEP 1: Upload ── -->
+            <section id="step-upload" class="card step active">
+                <div class="step-header">
+                    <span class="step-number">1</span>
+                    <h2>Wgraj plik audio</h2>
+                </div>
+                <div class="upload-zone" id="drop-zone">
+                    <div class="upload-zone__content">
+                        <svg class="upload-zone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p class="upload-zone__text">Przeciągnij plik audio tutaj</p>
+                        <p class="upload-zone__hint">lub kliknij, aby wybrać — WAV, MP3, M4A, FLAC, OGG</p>
+                        <input type="file" id="file-input" accept=".wav,.mp3,.m4a,.flac,.ogg" hidden>
+                    </div>
+                    <div class="upload-zone__selected" id="file-selected" hidden>
+                        <div class="file-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                                <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+                            </svg>
+                            <span id="file-name"></span>
+                            <span id="file-size" class="text-muted"></span>
+                            <button class="btn-icon" id="file-remove" title="Usuń">&times;</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── STEP 2: Settings ── -->
+            <section id="step-settings" class="card step">
+                <div class="step-header">
+                    <span class="step-number">2</span>
+                    <h2>Ustawienia montażu</h2>
+                </div>
+
+                <div class="settings-grid">
+                    <!-- Mode selection -->
+                    <div class="setting-group setting-group--wide">
+                        <label class="setting-label">Tryb przetwarzania</label>
+                        <div class="mode-selector">
+                            <button class="mode-btn mode-btn--active" data-mode="A" id="mode-a-btn">
+                                <span class="mode-btn__letter">A</span>
+                                <span class="mode-btn__title">Czyszczenie wypełniaczy i pauz</span>
+                                <span class="mode-btn__desc">Usuwa "yyy", "eee", "em" i skraca długie pauzy</span>
+                            </button>
+                            <button class="mode-btn" data-mode="B" id="mode-b-btn">
+                                <span class="mode-btn__letter">B</span>
+                                <span class="mode-btn__title">Usuwanie powtórzeń</span>
+                                <span class="mode-btn__desc">Wykrywa powtórzenia słów, fraz i restarty zdań</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Soften mode -->
+                    <div class="setting-group setting-group--wide">
+                        <label class="setting-label">Maskowanie cięć</label>
+                        <div class="soften-selector">
+                            <label class="radio-card radio-card--active">
+                                <input type="radio" name="soften_mode" value="ROOMTONE" checked>
+                                <span class="radio-card__title">ROOMTONE</span>
+                                <span class="radio-card__desc">Wstawia tło (room tone) — najbardziej naturalne</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="soften_mode" value="FADE">
+                                <span class="radio-card__title">FADE</span>
+                                <span class="radio-card__desc">Wyciszenie fade-in/fade-out</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="soften_mode" value="CUT">
+                                <span class="radio-card__title">CUT</span>
+                                <span class="radio-card__desc">Twarde cięcie + crossfade</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Numeric params -->
+                    <div class="setting-group">
+                        <label class="setting-label" for="silence_threshold">Próg ciszy (sek)</label>
+                        <input type="number" id="silence_threshold" value="3.0" min="0.5" max="30" step="0.5" class="input-field">
+                        <span class="setting-hint">Pauzy dłuższe są skracane</span>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label" for="max_pause">Maks. pauza po edycji (sek)</label>
+                        <input type="number" id="max_pause" value="0.4" min="0.1" max="5" step="0.1" class="input-field">
+                        <span class="setting-hint">Do jakiej długości skracać</span>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label" for="crossfade_ms">Crossfade (ms)</label>
+                        <input type="number" id="crossfade_ms" value="60" min="10" max="500" step="10" class="input-field">
+                        <span class="setting-hint">Długość przejścia na cięciach</span>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label" for="soften_ms">Soften (ms)</label>
+                        <input type="number" id="soften_ms" value="120" min="20" max="500" step="10" class="input-field">
+                        <span class="setting-hint">Długość wyciszenia wokół cięcia</span>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label" for="confidence_threshold">Próg pewności</label>
+                        <input type="range" id="confidence_threshold" value="0.75" min="0" max="1" step="0.05" class="input-range">
+                        <div class="range-labels">
+                            <span>Agresywny (0.0)</span>
+                            <span id="confidence_val" class="text-accent">0.75</span>
+                            <span>Ostrożny (1.0)</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label" for="whisper_model">Model Whisper</label>
+                        <select id="whisper_model" class="input-field">
+                            <option value="tiny">tiny — najszybszy</option>
+                            <option value="base" selected>base — domyślny</option>
+                            <option value="small">small — dokładniejszy</option>
+                            <option value="medium">medium — wysoka jakość</option>
+                            <option value="large-v3">large-v3 — najlepsza jakość</option>
+                        </select>
+                    </div>
+
+                    <!-- Optional offsets -->
+                    <details class="setting-group setting-group--wide">
+                        <summary class="setting-label setting-label--expandable">Zaawansowane: fragment nagrania</summary>
+                        <div class="settings-grid" style="padding-top:0.75rem">
+                            <div class="setting-group">
+                                <label class="setting-label" for="start_offset">Od (sek)</label>
+                                <input type="number" id="start_offset" placeholder="Początek" min="0" step="1" class="input-field">
+                            </div>
+                            <div class="setting-group">
+                                <label class="setting-label" for="end_offset">Do (sek)</label>
+                                <input type="number" id="end_offset" placeholder="Koniec" min="0" step="1" class="input-field">
+                            </div>
+                            <div class="setting-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="strict_mode">
+                                    <span>Tryb ścisły (pomija niepewne edycje)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="step-actions">
+                    <button class="btn btn--primary btn--lg" id="btn-start" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                        Rozpocznij montaż
+                    </button>
+                </div>
+            </section>
+
+            <!-- ── STEP 3: Processing ── -->
+            <section id="step-processing" class="card step" hidden>
+                <div class="step-header">
+                    <span class="step-number">3</span>
+                    <h2>Przetwarzanie</h2>
+                </div>
+                <div class="processing-panel">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+                    </div>
+                    <p class="progress-text">
+                        <span id="progress-pct">0</span>% — <span id="progress-step">Oczekiwanie...</span>
+                    </p>
+                    <div class="processing-animation" id="processing-anim">
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── STEP 4: Results ── -->
+            <section id="step-results" class="card step" hidden>
+                <div class="step-header">
+                    <span class="step-number step-number--done">✓</span>
+                    <h2>Wyniki montażu</h2>
+                </div>
+
+                <!-- Summary stats -->
+                <div class="results-stats" id="results-stats"></div>
+
+                <!-- Audio player comparison -->
+                <div class="audio-compare" id="audio-compare">
+                    <div class="audio-player-card">
+                        <h3>Oryginał</h3>
+                        <audio id="player-original" controls preload="metadata"></audio>
+                    </div>
+                    <div class="audio-player-card audio-player-card--result">
+                        <h3>Po montażu</h3>
+                        <audio id="player-result" controls preload="metadata"></audio>
+                    </div>
+                </div>
+
+                <!-- Edit list -->
+                <details class="edits-details">
+                    <summary class="setting-label setting-label--expandable">Lista edycji</summary>
+                    <div class="edits-table-wrap" id="edits-table-wrap"></div>
+                </details>
+
+                <!-- Download buttons -->
+                <div class="download-grid" id="download-grid"></div>
+
+                <!-- New processing button -->
+                <div class="step-actions">
+                    <button class="btn btn--outline" id="btn-new">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                        </svg>
+                        Nowe przetwarzanie
+                    </button>
+                </div>
+            </section>
+
+            <!-- ── ERROR ── -->
+            <section id="step-error" class="card step card--error" hidden>
+                <div class="step-header">
+                    <span class="step-number step-number--error">!</span>
+                    <h2>Wystąpił błąd</h2>
+                </div>
+                <p class="error-msg" id="error-msg"></p>
+                <div class="step-actions">
+                    <button class="btn btn--outline" id="btn-retry">Spróbuj ponownie</button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Audio Assembly v1.0 — Montaż audio PL</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

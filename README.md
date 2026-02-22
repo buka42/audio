@@ -1,10 +1,12 @@
 # Audio Assembly — Automatyczny montaż audio (PL)
 
-Narzędzie CLI do automatycznego montażu plików audio w języku polskim.
+Narzędzie CLI + Web UI do automatycznego montażu plików audio w języku polskim.
 Usuwa wypełniacze mowy (yyy, eee), skraca zbyt długie pauzy i wykrywa powtórzenia/restarty zdań.
 
 ## Funkcje
 
+- **Web UI** — drag & drop, podgląd na żywo, odtwarzacz przed/po, pobieranie wyników
+- **CLI** — pełna kontrola z wiersza poleceń
 - **Tryb A: CLEAN_FILLERS_AND_PAUSES** — usuwa wypełniacze (yyy, eee, em, ymm...) i skraca pauzy
 - **Tryb B: REMOVE_REPETITIONS_CONTEXTUAL** — wykrywa i usuwa powtórzenia słów, fraz i restarty zdań
 - Trzy tryby maskowania cięć: **ROOMTONE**, **FADE**, **CUT**
@@ -37,6 +39,24 @@ pip install -e ".[transcription]"
 ```
 
 ## Użycie
+
+### Web UI (zalecane)
+
+```bash
+python run_web.py
+# lub z podaniem portu:
+python run_web.py 8080
+```
+
+Otwórz http://localhost:5000 w przeglądarce. Interfejs umożliwia:
+- Przeciągnięcie pliku audio (drag & drop)
+- Wybór trybu (A/B) i wszystkich parametrów
+- Podgląd postępu w czasie rzeczywistym (SSE)
+- Porównanie oryginału z wynikiem (odtwarzacz)
+- Tabelę edycji ze statusami i timestampami
+- Pobranie wszystkich plików wyjściowych
+
+### CLI
 
 ### Tryb A — Czyszczenie wypełniaczy i pauz
 

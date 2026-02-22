@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wyniki — Audio Assembly</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="header__logo">
+                <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+                <h1>Audio Assembly</h1>
+            </div>
+        </header>
+
+        <main class="main">
+            {% if job and job.status == 'done' and job.report %}
+            <section class="card">
+                <div class="step-header">
+                    <span class="step-number step-number--done">✓</span>
+                    <h2>Wyniki montażu — {{ job_id }}</h2>
+                </div>
+                <pre style="font-family:var(--mono);font-size:0.8rem;white-space:pre-wrap;color:var(--text-muted)">{{ job.report.summary }}</pre>
+            </section>
+
+            <div class="step-actions">
+                <a href="/" class="btn btn--outline">Nowe przetwarzanie</a>
+            </div>
+
+            {% elif job and job.status == 'error' %}
+            <section class="card card--error">
+                <div class="step-header">
+                    <span class="step-number step-number--error">!</span>
+                    <h2>Błąd</h2>
+                </div>
+                <p class="error-msg">{{ job.error }}</p>
+                <div class="step-actions">
+                    <a href="/" class="btn btn--outline">Spróbuj ponownie</a>
+                </div>
+            </section>
+
+            {% else %}
+            <section class="card">
+                <div class="step-header">
+                    <span class="step-number">?</span>
+                    <h2>Zadanie w trakcie przetwarzania</h2>
+                </div>
+                <p style="color:var(--text-muted)">Odśwież stronę za chwilę.</p>
+            </section>
+            {% endif %}
+        </main>
+    </div>
+</body>
+</html>
