@@ -5,6 +5,8 @@ __pycache__/
 dist/
 build/
 output/
+output_web/
+uploads/
 *.wav
 *.mp3
 *.m4a
